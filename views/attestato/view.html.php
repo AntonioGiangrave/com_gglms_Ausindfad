@@ -58,7 +58,7 @@ class gglmsViewattestato extends JView {
             $user = & JFactory::getUser();
             $studentid = $user->get('id');
         }
-        $model->certificate($studentid, $itemid, 'attestato_frequenza.tpl');
+        $model->certificate($studentid, $itemid);
         $this->_japp->close();
 //        }
     }

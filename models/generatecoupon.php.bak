@@ -120,24 +120,49 @@ class gglmsModelGeneratecoupon extends JModel {
             $data['email_riferimento'] = $results[1];
 
             // invio la mail all'azienda con i coupon inseriti
-            require_once('libs/sendmail.class.php');
+//            require_once('libs/sendmail.class.php');
+//            require_once('libs/smarty/EasySmarty.class.php');
+//            $mail = new sendmail(MIME_HTML);
+//            $mail->from($data['associazione_name'], $data['email_riferimento']);
+//            $mail->to($data['email'], RCPT_TO);
+//            $mail->to('antonio@ggallery.it', RCPT_BCC);
+//            $mail->to($data['email_riferimento'], RCPT_BCC);
+//            $mail->subject('Coupon corso ' . $data['associazione_name']);
+//            $smarty = new EasySmarty();
+//            $data['password'] = $new_user['password'];
+//            $smarty->assign('ausind', $data);
+//            $smarty->assign('coupons', $coupons);
+//            $smarty->assign('coursename', $course_info['corso']);
+
+//            $mail->body($smarty->fetch_template('coupons_mail.tpl', null, true, false, 0));
+//            if (!$mail->send())
+//                throw new RuntimeException('Error sending mail', E_USER_ERROR);
+
+            
+            
+            // NUOVO SISTEMA MAILING
+            
             require_once('libs/smarty/EasySmarty.class.php');
-            $mail = new sendmail(MIME_HTML);
-            $mail->from($data['associazione_name'], $data['email_riferimento']);
-            $mail->to($data['email'], RCPT_TO);
-            $mail->to('antonio@ggallery.it', RCPT_BCC);
-            $mail->to($data['email_riferimento'], RCPT_BCC);
-            $mail->subject('Coupon corso ' . $data['associazione_name']);
+            $mailer = JFactory::getMailer(); 
+            $mailer->setSender($data['associazione_name'], $data['email_riferimento']);
+            $recipient = array($results['email_riferimento'], $data['email'], 'antonio@ggallery.it');
+            $mailer->addRecipient($recipient);
+            $mailer->setSubject('Coupon corso ' . $data['associazione_name']);
+            
             $smarty = new EasySmarty();
             $data['password'] = $new_user['password'];
             $smarty->assign('ausind', $data);
             $smarty->assign('coupons', $coupons);
             $smarty->assign('coursename', $course_info['corso']);
-
-            $mail->body($smarty->fetch_template('coupons_mail.tpl', null, true, false, 0));
-            if (!$mail->send())
+            $mailer->setBody($smarty->fetch_template('coupons_mail.tpl', null, true, false, 0));
+            $mailer->isHTML(true);
+            
+            if (!$mailer->Send())
                 throw new RuntimeException('Error sending mail', E_USER_ERROR);
-
+            
+            // FINE NUOVO SISTEMA MAILING
+            
+            
             // e buona notte al secchio
             debug::msg('success');
             return true;

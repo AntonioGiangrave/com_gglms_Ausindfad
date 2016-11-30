@@ -39,7 +39,7 @@ class gglmsModelattestato extends JModel {
 	 * @param int $itemid Elemento collegato all'attestato.
 	 * @param string $template Template dell'attestato.
 	 */
-	public function certificate($userid, $itemid, $template = 'attestato_frequenza.tpl') {
+	public function certificate($userid, $itemid, $template = 'attestato.tpl') {
 		try {
 			$userid = filter_var($userid, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)));
 			if (empty($userid))
@@ -131,13 +131,6 @@ class gglmsModelattestato extends JModel {
 
 			$this->_set_track();
 
-
-			$tracklog['course'] = $this->_get_track($course_info['id']);
-			$tracklog['total'] = $this->_get_track_total($course_info['id']);
-			
-			$pdf->add_tracklog($tracklog, 'tracklog');			
-
-
 			$pdf->fetch_pdf_template($template, null, true, false, 0);
 			$pdf->Output($course_info['titoloattestato'] . '.pdf', 'D');
 			
@@ -228,8 +221,7 @@ class gglmsModelattestato extends JModel {
 			$query = 'SELECT
 					d.`name`,
 					d.dg,
-					d.logo, 
-					c.stampatracciato
+					d.logo
 					FROM #__usergroups_details AS d
 					INNER JOIN #__gg_coupon AS c ON c.gruppo=d.group_id
 					WHERE c.id_utente=' . $this->_user_id;
@@ -346,87 +338,6 @@ class gglmsModelattestato extends JModel {
 		}
 		return null;
 	}
-
-
-		/*
-	* Recupera track dalla tabella gg_track
-	*/
-
-	private function _get_track($id_corso) {
-		try {
-			$query = '(SELECT
-							e.id,
-							e.elemento,
-							DATE_FORMAT(t.data,"%d/%m/%Y - %H:%i") as data,
-							#t.data,
-							SEC_TO_TIME(tview) as tview
-						FROM
-							#__gg_corsi AS c
-						INNER JOIN #__gg_corsi_versione AS v ON c.id = v.id_corso
-						INNER JOIN #__gg_moduli AS m ON m.id_corso = v.id
-						INNER JOIN #__gg_elementi AS e ON e.id_modulo = m.id
-						INNER JOIN #__gg_track AS t ON t.id_elemento = e.id
-						WHERE
-							c.id = '.$id_corso.' AND
-							t.id_utente = '.$this->_user_id .'
- 							ORDER BY e.ordinamento ASC)';
-
-
-
-			debug::msg($query);
-			$this->_db->setQuery($query);
-			if (false === ($results = $this->_db->loadAssoclist()))
-				throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-			debug::vardump($results);
-			return $results;
-			//return array('name' => 'xxx', 'dg' => 'xxx', 'logo' => 'ausind_logo.png');
-		} catch (Exception $e) {
-			debug::exception($e);
-		}
-		return array();
-	}
-
-
-	private function _get_track_total($id_corso) {
-		try {
-			$query =	'(SELECT
-							" " as id, 
-							"<b> TOTALE  </b>" as elemento,
-							" " as data,
-							SEC_TO_TIME(sum(tview)) as tview
-
-						FROM
-
-							#__gg_corsi AS c
-						INNER JOIN ihyb8_gg_corsi_versione AS v ON c.id = v.id_corso
-						INNER JOIN ihyb8_gg_moduli AS m ON m.id_corso = v.id
-						INNER JOIN ihyb8_gg_elementi AS e ON e.id_modulo = m.id
-						INNER JOIN ihyb8_gg_track AS t ON t.id_elemento = e.id
-						WHERE
-							c.id = '. $id_corso.' AND 
-							t.id_utente = ' . $this->_user_id.')'
-			;
-
-
-			debug::msg($query);
-			$this->_db->setQuery($query);
-			if (false === ($results = $this->_db->loadAssoc()))
-				throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-			debug::vardump($results);
-			return $results;
-			//return array('name' => 'xxx', 'dg' => 'xxx', 'logo' => 'ausind_logo.png');
-		} catch (Exception $e) {
-			debug::exception($e);
-		}
-		return array();
-	}
-
-
-
-
-
-
-
 
 }
 

@@ -95,9 +95,9 @@ class gglmsController extends JController {
 //            throw new RuntimeException('Error sending mail', E_USER_ERROR);
         //echo var_export($_POST, true);
         //$app->close();
-
-
-
+     
+        
+            
         //// NOVITA' INSERIMENTO ////
         $mailer = JFactory::getMailer();
         $mailer->setSender($_POST['frommail']);
@@ -111,14 +111,14 @@ class gglmsController extends JController {
             throw new RuntimeException('Error sending mail', E_USER_ERROR);
 
         $app->close();
-
-
-
-
-
-
-
-
+        
+        
+        
+        
+        
+        
+        
+        
         parent::display('helpdesk');
     }
 
@@ -147,14 +147,12 @@ class gglmsController extends JController {
                 $results['report'] = "<p> Il coupon è in attesa di abilitazione. (COD. 03)</p>";
                 $results['valido'] = 0;
             } else {
-                $model->assegnaCoupon($coupon);
-                $corsi_abilitati = $model->corsi_abilitati($coupon);
-
-                $model->iscriviUtente($corsi_abilitati);
+                $model->assegnaCoupon($dettagli_coupon['coupon']);
+                $model->iscriviUtente($dettagli_coupon['corsi_abilitati']);
                 $model->set_user_groups($dettagli_coupon['coupon']);
                 $results['valido'] = 1;
                 $results['report'] = "<p> Coupon valido. (COD.04)</p>";
-                $results['report'] .= $model->get_listaCorsiFast($corsi_abilitati);
+                $results['report'] .= $model->get_listaCorsiFast($dettagli_coupon['corsi_abilitati']);
             }
         }
 
@@ -189,7 +187,7 @@ class gglmsController extends JController {
                 WHERE id_elemento= ' . $id_elemento . ' AND
                     id_utente=' . $user_id . ' LIMIT 1';
             } else {
-                $query = '
+            $query = '
                 UPDATE #__gg_track
                     set tview = ' . $secondi . ',
                     stato = 1
@@ -237,16 +235,16 @@ class gglmsController extends JController {
             // debug::startNested('log', array('debug_level' => $dbg?E_ALL|E_STRICT|DEBUG_INFO|DEBUG_LOG:0, 'logfile' => DEBUG_LOG_FILE, 'append' => false), 'coupon');
 
             $data_base64 = JRequest::getVar('data', null);
-            $data_base64 = str_replace(' ','+',$data_base64);
+
             // FB::log($data_base64, 'data_base64');
             // debug::vardump($data_base64, 'data_base64');
             if (!isset($data_base64))
                 throw new DomainException('No data sent', E_USER_ERROR);
             if (false === ($data = base64_decode($data_base64)))
                 throw new DomainException('Invalid encoded string sent: ' . $data_base64, E_USER_ERROR);
-
+            
             // debug::vardump($data, 'data');
-
+            // FB::log($data, 'data');
 
             $xml = new DOMDocument();
             $xml->loadXML($data);
@@ -286,7 +284,7 @@ class gglmsController extends JController {
             if (is_null($xml_data['attestato']))
                 throw new DomainException('attestato not set or is not valid', E_USER_ERROR);
 
-            debug::vardump($xml_data, 'xml_data');
+             debug::vardump($xml_data, 'xml_data');
 
             $model = $this->getModel('generatecoupon');
             $ret = ($model->insert_coupons($xml_data) ? 'ok' : 'no');
@@ -333,7 +331,6 @@ class gglmsController extends JController {
                 throw new DomainException('token not set or not valid', E_USER_ERROR);
 
             $model = $this->getModel('enablecoupon');
-
 
             echo ($model->enable_coupons($xml_data) ? 'ok' : 'no');
         } catch (Exception $e) {

@@ -20,6 +20,8 @@
         text-align:center;
     }
 </style>
+
+
 <div id="container">
     <div id="attestato">
         <div style="text-align: center">
@@ -27,6 +29,7 @@
         </div>
 
         <div>
+
             <h1>Programma nazionale per la formazione continua degli operatori della sanità</h1>
             <p>
                 Premesso che la <strong>Commissione Nazionale per la Formazione Continua</strong> ha accreditato provvisoriamente
@@ -63,3 +66,6 @@
         </div>
     </div>
 </div>   
+
+
+<!-- {$data|@var_dump}   -->

@@ -39,6 +39,12 @@ class certificatePDF extends TCPDF {
             $this->_data = array_merge($this->_data, $data);
     }
 
+
+    public function add_tracklog($data) {
+        if (is_array($data))
+            $this->_tracklog = $data;
+    }
+
     /**
      * Combina i dati e il template generando la parte una o più pagine PDF.
      * Nel template deve essere usata la variabile {$data} che contine tutti
@@ -54,9 +60,8 @@ class certificatePDF extends TCPDF {
         $this->AddPage();
         $smarty = new EasySmarty();
         $smarty->assign('data', $this->_data);
-        debug::vardump($this->_data);
+        $smarty->assign('tracklog', $this->_tracklog);
         $html = $smarty->fetch_template($template, $cache_id, $check, $cache, $lifetime);
-        debug::vardump($html);
         $this->writeHTML($html, true, true, true, false, '');
         $this->lastPage();
     }

@@ -49,38 +49,6 @@ class gglmsModelcoupon extends JModel {
         
     }
 
-    public function corsi_abilitati($coupon) {
-        try {
-            $query = '
-                SELECT
-                    corsi_abilitati
-                FROM 
-                    #__gg_coupon as c
-                WHERE 
-                    substring_index(c.coupon,"@",1)    =   "' . $coupon . '" 
-                ';
-
-            if ($this->_dbg)
-                $this->_japp->enqueueMessage($query);
-
-            $this->_db->setQuery($query);
-            if (false === ($results = $this->_db->loadColumn()))
-                throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-            $corsi_abilitati = empty($results) ? array() : $results;
-        } catch (Exception $e) {
-            jimport('joomla.error.log');
-            $log = &JLog::getInstance('com_gglms.log.php');
-            $log->addEntry(array('comment' => $e->getMessage(), 'status' => $e->getCopde));
-            if ($this->_dbg)
-                $this->_japp->enqueueMessage($e->getMessage(), 'error');
-            $corsi_abilitati = array();
-        }
-        
-        $corsi_abilitati = implode(",", $corsi_abilitati);
-        
-        return $corsi_abilitati;
-    }
-
     public function check_Coupon($coupon) {
         try {
             $query = '
@@ -89,7 +57,7 @@ class gglmsModelcoupon extends JModel {
                 FROM 
                     #__gg_coupon as c
                 WHERE 
-                    substring_index(c.coupon,"@",1)    =   "' . $coupon . '" 
+                    c.coupon = "' . $coupon . '"
                         AND 
                     c.id_utente IS NULL
                 ';
@@ -164,7 +132,7 @@ class gglmsModelcoupon extends JModel {
                 SET id_utente = ' . $this->_userid . ', 
                 data_utilizzo = NOW()
                 WHERE 
-                    substring_index(coupon,"@",1)    =   "' . $coupon . '" 
+                    coupon = "' . $coupon . '"
                 ';
 
             if ($this->_dbg)

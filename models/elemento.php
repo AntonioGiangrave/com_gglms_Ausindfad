@@ -72,7 +72,7 @@ class gglmsModelelemento extends JModel {
                 Left Join #__gg_corsi_versione AS v ON m.id_corso = v.id 
                 Left Join #__gg_corsi AS c ON c.id = v.id_corso
                 WHERE
-                    e.id=' . $this->_id . ' AND tipologia=\'contenuto\'
+                    e.id=' . $this->_id . ' AND (tipologia=\'contenuto\' OR tipologia=\'riepilogo\') 
                 LIMIT 1';
             debug::msg($query);
             $this->_db->setQuery($query);

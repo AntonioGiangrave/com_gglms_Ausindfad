@@ -35,7 +35,7 @@ $idm = JRequest::getInt('idm', 0);
             
         });
         
-        jQuery(".contenuto_1, .contenuto_2").click(function(){
+        jQuery(".contenuto_1, .contenuto_2,  .riepilogo_1,  .riepilogo_2 ").click(function(){
             var id = jQuery(this).attr('id');
             window.location="index.php?option=com_gglms&view=elemento&id="+id;
         });
@@ -66,7 +66,7 @@ $idm = JRequest::getInt('idm', 0);
             });
         });
         
-        jQuery(".contenuto_0, .quiz_0, .attestato_0").click(function(){
+        jQuery(".contenuto_0, .quiz_0, .attestato_0, .riepilogo_0").click(function(){
             alert('Non puoi ancora aprire questo elemento fino a che non hai superato quelli a lui propedeutici.');
         });
         

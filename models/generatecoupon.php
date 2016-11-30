@@ -13,11 +13,10 @@ jimport('joomla.application.component.model');
 jimport('joomla.user.helper');
 
 class gglmsModelGeneratecoupon extends JModel {
+
     const DEFAULT_LENGHT = 60;
     const DIRIGENTI_LENGHT = 180;
-
     const DIRIGENTI_COURSE_ID = '10';
-
 
     private $_japp;
     protected $_db;
@@ -97,12 +96,35 @@ class gglmsModelGeneratecoupon extends JModel {
             $coupons = array();
             $values = array();
             $durata = (false === strpos($data['course_id'], self::DIRIGENTI_COURSE_ID)) ? self::DEFAULT_LENGHT : self::DIRIGENTI_LENGHT;
-            for ($i = 0; $i < $data['coupon_number']; $i++) {
-                $course_info = $this->_course_prefix($data['course_id']);
-                $coupons[$i] = $this->_generate_coupon($course_info['prefisso_coupon'], $data['ragione_sociale']);
 
-                $values[] = sprintf("('%s', '%s', %d, '%s', %d, %d, %d)", $coupons[$i], $data['course_id'], $group_id, $data['transition_id'], $data['attestato'], $new_user['user_id'], $durata);
+            //pacchetti
+            if ($data['course_id'] > 100) {
+                $query = 'SELECT abstract as listacorsi FROM #__gg_corsi WHERE id =' . $data['course_id'];
+                $this->_db->setQuery($query);
+                $results = $this->_db->loadResult();
+                $corsi = explode(",", $results);
+
+                for ($i = 0; $i < $data['coupon_number']; $i++) {
+
+                    $course_info = $this->_course_prefix($data['course_id']);
+                    $coupons[$i] = $this->_generate_coupon($course_info['prefisso_coupon'], $data['ragione_sociale']);
+
+                    foreach ($corsi as $corso) {
+                        $sub_course_info = $this->_course_prefix($corso);
+                        $values[] = sprintf("('%s', '%s', %d, '%s', %d, %d, %d)", $coupons[$i] ."@". $sub_course_info['prefisso_coupon'], $corso, $group_id, $data['transition_id'], $data['attestato'], $new_user['user_id'], $durata);
+                    }
+                }
+            } else {
+
+                for ($i = 0; $i < $data['coupon_number']; $i++) {
+                    $course_info = $this->_course_prefix($data['course_id']);
+                    $coupons[$i] = $this->_generate_coupon($course_info['prefisso_coupon'], $data['ragione_sociale']);
+
+                    $values[] = sprintf("('%s', '%s', %d, '%s', %d, %d, %d)", $coupons[$i], $data['course_id'], $group_id, $data['transition_id'], $data['attestato'], $new_user['user_id'], $durata);
+                }
             }
+
+
             // li inserisco nel DB
             $query = 'INSERT INTO #__gg_coupon (coupon, corsi_abilitati, gruppo, id_iscrizione, attestato, id_societa, durata) VALUES ' . join(',', $values);
 
@@ -133,22 +155,25 @@ class gglmsModelGeneratecoupon extends JModel {
 //            $smarty->assign('ausind', $data);
 //            $smarty->assign('coupons', $coupons);
 //            $smarty->assign('coursename', $course_info['corso']);
-
 //            $mail->body($smarty->fetch_template('coupons_mail.tpl', null, true, false, 0));
 //            if (!$mail->send())
 //                throw new RuntimeException('Error sending mail', E_USER_ERROR);
-
-            
-            
             // NUOVO SISTEMA MAILING
+
+
+//            echo "1".$data['email'];
+//            echo "2".$data['email_riferimento'];
+//            echo var_dump($data);
+//            echo var_dump($results);
+//            
             
             require_once('libs/smarty/EasySmarty.class.php');
-            $mailer = JFactory::getMailer(); 
-            $mailer->setSender($data['associazione_name'], $data['email_riferimento']);
-            $recipient = array($results['email_riferimento'], $data['email'], 'antonio@ggallery.it');
+            $mailer = JFactory::getMailer();
+            $mailer->setSender( $data['email_riferimento']);
+            $recipient = array($data['email_riferimento'],$data['email'] , 'antonio@ggallery.it');
             $mailer->addRecipient($recipient);
             $mailer->setSubject('Coupon corso ' . $data['associazione_name']);
-            
+
             $smarty = new EasySmarty();
             $data['password'] = $new_user['password'];
             $smarty->assign('ausind', $data);
@@ -156,13 +181,11 @@ class gglmsModelGeneratecoupon extends JModel {
             $smarty->assign('coursename', $course_info['corso']);
             $mailer->setBody($smarty->fetch_template('coupons_mail.tpl', null, true, false, 0));
             $mailer->isHTML(true);
-            
+
             if (!$mailer->Send())
                 throw new RuntimeException('Error sending mail', E_USER_ERROR);
-            
+
             // FINE NUOVO SISTEMA MAILING
-            
-            
             // e buona notte al secchio
             debug::msg('success');
             return true;
@@ -172,7 +195,7 @@ class gglmsModelGeneratecoupon extends JModel {
         }
     }
 
-      public function _course_prefix($id) {
+    public function _course_prefix($id) {
         try {
             // li inserisco nel DB
             $query = '
@@ -180,25 +203,21 @@ class gglmsModelGeneratecoupon extends JModel {
             c.prefisso_coupon
             FROM ihyb8_gg_corsi as c
             WHERE
-            id= '. $id;
-            
+            id= ' . $id;
+
             debug::msg($query);
             $this->_db->setQuery($query);
-            if (false === ($result =  $this->_db->loadAssoc()))
+            if (false === ($result = $this->_db->loadAssoc()))
                 throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-                
-                return $result;
 
-            }
-            catch (Exception $e)
-            {
-                debug::exception($e);
-            }
-
+            return $result;
+        } catch (Exception $e) {
+            debug::exception($e);
         }
+    }
 
     private function _generate_coupon($prefisso, $usr_ragionesociale) {
-        return str_replace(' ', '_', $prefisso.substr($usr_ragionesociale, 0, 3)) . str_replace('0', 'k', md5(uniqid('', true))); // no zeros
+        return str_replace(' ', '_', $prefisso . substr($usr_ragionesociale, 0, 3)) . str_replace('0', 'k', md5(uniqid('', true))); // no zeros
     }
 
     private function _check_username($username) {
@@ -211,7 +230,7 @@ class gglmsModelGeneratecoupon extends JModel {
     }
 
     private function _generate_pwd($l = 8) {
-        return chr(65 + rand(0, 1) * 32 + rand(0, 25)) . ($l ? $this->_generate_pwd(--$l) : '');
+        return chr(65 + rand(0, 1) * 32 + rand(0, 25)) . ($l ? $this->_generate_pwd( --$l) : '');
     }
 
     public function check_Coupon($coupon) {

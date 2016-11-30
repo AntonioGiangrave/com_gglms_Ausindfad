@@ -29,9 +29,10 @@ class gglmsViewelemento extends JView {
         debug::vardump($groups, 'gruppi');
         $this->assignRef('tutor', $tutor);
         debug::vardump($tutor, 'tutor');
-        
-        $session = JFactory::getSession();
 
+
+        //RECUPERO SE ESISTE IL TEMPLATE PREFERITO
+        $session = JFactory::getSession();
         $gg_elemento = $session->get('gg_elemento');
         $tpl = JRequest::getVar('tpl');
 
@@ -47,11 +48,15 @@ class gglmsViewelemento extends JView {
             }
         }
         $session->set('gg_elemento', $gg_elemento);
+        //FINE TEMPLATE PREFERITO
+
 
         $model = & $this->getModel();
         $elemento = $model->getElemento();
-        
-        if ($gg_elemento != "flash") {
+
+
+
+        if ($gg_elemento == "html5") {
             //$path = "contenuti_fad/" . $elemento['path'] . "/cue_points.xml";
             $path = $elemento['path'] . '/cue_points.xml';
             $jumper = $model->getJumperXML($path);
@@ -59,7 +64,14 @@ class gglmsViewelemento extends JView {
         }
 
         $this->assignRef('elemento', $elemento);
-        $layout = ($gg_elemento == 'flash') ? 'flash' : null;
+
+        if($elemento['tipologia']=='riepilogo')
+        {
+            $layout =  'riepilogo';
+        }
+        else
+            $layout = ($gg_elemento == 'flash') ? 'flash' : null;
+
         parent::display($layout);
     }
 

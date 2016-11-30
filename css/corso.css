@@ -186,14 +186,14 @@
 }
 
 
-.contenuto_1, .contenuto_2, .attestato_1, .attestato_2, .quiz_1, .quiz_2, .exam_1, .exam_2 {
+.contenuto_1, .riepilogo_1, .riepilogo_2, .contenuto_2, .attestato_1, .attestato_2, .quiz_1, .quiz_2, .exam_1, .exam_2 {
     background-color: #DFE5EB;
     padding: 5px;
     border-bottom:dotted;
     border-bottom-color:#999;
     border-bottom-width:thin;
 }
-.contenuto_1:hover, .contenuto_2:hover, .attestato_1:hover, .attestato_2:hover, .quiz_1:hover, .quiz_2:hover, .exam_1:hover,.exam_2:hover {
+.contenuto_1:hover, .riepilogo_1:hover , .riepilogo_2:hover, .contenuto_2:hover, .attestato_1:hover, .attestato_2:hover, .quiz_1:hover, .quiz_2:hover, .exam_1:hover,.exam_2:hover {
     background-color: #8CC700;
     padding: 5px;
     border-bottom:dotted;
@@ -205,7 +205,7 @@
     cursor: pointer;
 }
 
-.contenuto_0, .attestato_0, .quiz_0{
+.contenuto_0, .attestato_0, .quiz_0 , .riepilogo_0{
     background-color: #DFE5EB;
     padding: 5px;
     border-bottom:dotted;
@@ -213,7 +213,7 @@
     border-bottom-width:thin;
 }
 
-.contenuto_0:hover, .attestato_0:hover, .quiz_0:hover {
+.contenuto_0:hover, .attestato_0:hover, .quiz_0:hover , .riepilogo_0:hover {
     background-color: #F00;
     padding: 5px;
     border-bottom:dotted;

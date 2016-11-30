@@ -1,31 +1,32 @@
-<?php /* Smarty version Smarty-3.1.5, created on 2015-01-19 09:15:00
+<?php /* Smarty version Smarty-3.1.5, created on 2015-06-03 16:06:18
          compiled from "components/com_gglms/models/templates/coupons_mail.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:75564756954bcbd042732c1-73217262%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:1414614494556f09da69dec1-25440295%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '1c4c013f24ae5ae8bf2cc4db1e9188c3c4ce09cb' => 
     array (
       0 => 'components/com_gglms/models/templates/coupons_mail.tpl',
-      1 => 1360669004,
+      1 => 1433340371,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '75564756954bcbd042732c1-73217262',
+  'nocache_hash' => '1414614494556f09da69dec1-25440295',
   'function' => 
   array (
   ),
   'variables' => 
   array (
     'ausind' => 0,
+    'coursename' => 0,
     'coupons' => 0,
     'coupon' => 0,
   ),
   'has_nocache_code' => false,
   'version' => 'Smarty-3.1.5',
-  'unifunc' => 'content_54bcbd043a53e',
+  'unifunc' => 'content_556f09da75183',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_54bcbd043a53e')) {function content_54bcbd043a53e($_smarty_tpl) {?>
+<?php if ($_valid && !is_callable('content_556f09da75183')) {function content_556f09da75183($_smarty_tpl) {?>
 <html>
     <head>
         <title>Coupon</title>
@@ -53,9 +54,12 @@ $_valid = $_smarty_tpl->decodeProperties(array (
             Le ricordiamo che saranno valide anche per gli eventuali futuri acquisti di corsi e-learning, custodisca quindi con cura questa mail.
         </p>
             Ecco <?php if ($_smarty_tpl->tpl_vars['ausind']->value['coupon_number']>1){?>i<?php }else{ ?>il<?php }?> <?php echo $_smarty_tpl->tpl_vars['ausind']->value['coupon_number'];?>
- coupon da Lei richiesti. I coupon non saranno attivi fino al momento della conferma 
-            di avvenuto pagamento:
+ coupon da Lei richiesti. I coupon non saranno attivi fino al momento della conferma di avvenuto pagamento.
         </p>
+
+        <h3><?php echo $_smarty_tpl->tpl_vars['coursename']->value;?>
+</h3>
+
         <div style="font-family: monospace;">
 		  <?php  $_smarty_tpl->tpl_vars['coupon'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['coupon']->_loop = false;
  $_from = $_smarty_tpl->tpl_vars['coupons']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}

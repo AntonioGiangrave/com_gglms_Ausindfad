@@ -1,6 +1,6 @@
-<?php /* Smarty version Smarty-3.1.5, created on 2015-06-03 16:06:18
+<?php /* Smarty version Smarty-3.1.5, created on 2016-09-23 14:18:32
          compiled from "components/com_gglms/models/templates/coupons_mail.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:1414614494556f09da69dec1-25440295%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:7750695157e539b81dcab9-20884795%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
@@ -11,7 +11,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '1414614494556f09da69dec1-25440295',
+  'nocache_hash' => '7750695157e539b81dcab9-20884795',
   'function' => 
   array (
   ),
@@ -24,9 +24,9 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   ),
   'has_nocache_code' => false,
   'version' => 'Smarty-3.1.5',
-  'unifunc' => 'content_556f09da75183',
+  'unifunc' => 'content_57e539b82e56e',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_556f09da75183')) {function content_556f09da75183($_smarty_tpl) {?>
+<?php if ($_valid && !is_callable('content_57e539b82e56e')) {function content_57e539b82e56e($_smarty_tpl) {?>
 <html>
     <head>
         <title>Coupon</title>

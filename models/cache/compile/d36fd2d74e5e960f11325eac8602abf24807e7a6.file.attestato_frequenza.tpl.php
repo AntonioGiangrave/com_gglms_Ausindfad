@@ -1,66 +1,68 @@
-<?php /* Smarty version Smarty-3.1.5, created on 2015-06-03 17:02:51
+<?php /* Smarty version Smarty-3.1.5, created on 2016-10-07 09:25:01
          compiled from "components/com_gglms/models/templates/attestato_frequenza.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:753167566556f171b8ca186-59427404%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:152013545057e3f920279eb9-25698952%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'd36fd2d74e5e960f11325eac8602abf24807e7a6' => 
     array (
       0 => 'components/com_gglms/models/templates/attestato_frequenza.tpl',
-      1 => 1421409319,
+      1 => 1475827489,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '753167566556f171b8ca186-59427404',
+  'nocache_hash' => '152013545057e3f920279eb9-25698952',
   'function' => 
   array (
   ),
+  'version' => 'Smarty-3.1.5',
+  'unifunc' => 'content_57e3f92047a58',
   'variables' => 
   array (
     'data' => 0,
+    'tracklog' => 0,
+    'single' => 0,
   ),
   'has_nocache_code' => false,
-  'version' => 'Smarty-3.1.5',
-  'unifunc' => 'content_556f171b9ded6',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_556f171b9ded6')) {function content_556f171b9ded6($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_capitalize')) include 'components/com_gglms/models/libs/smarty/smarty/plugins/modifier.capitalize.php';
+<?php if ($_valid && !is_callable('content_57e3f92047a58')) {function content_57e3f92047a58($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_capitalize')) include 'components/com_gglms/models/libs/smarty/smarty/plugins\\modifier.capitalize.php';
 ?>
 
-<style>
-    #container {
-        text-align:center;
-    }
-    #attestato {
-        margin: 0 auto;
-        text-align:center;
-    }
+    <style>
+        #container {
+            text-align:center;
+        }
+        #attestato {
+            margin: 0 auto;
+            text-align:center;
+        }
 
-    h1, h2 {
-        text-align:center;
-        color: navy;
-        font-family: times;
-    }
+        h1, h2 {
+            text-align:center;
+            color: navy;
+            font-family: times;
+        }
 
-    h1 {
-        font-size: 24pt;
-    }
-    h2 {
-        font-size: 18pt;
-    }
-    p {
-        color: #000;
-        font-family: times;
-        font-size: 14pt;
-        text-align:center;
-    }
-    p.small {
-        font-size: 10pt;
-    }
-    p.big {
-        font-size: 16pt;
-        text-align:right;
-    }
-</style>
+        h1 {
+            font-size: 24pt;
+        }
+        h2 {
+            font-size: 18pt;
+        }
+        p {
+            color: #000;
+            font-family: times;
+            font-size: 14pt;
+            text-align:center;
+        }
+        p.small {
+            font-size: 10pt;
+        }
+        p.big {
+            font-size: 16pt;
+            text-align:right;
+        }
+    </style>
 
 <div id="container">
     <div id="attestato">
@@ -103,9 +105,50 @@ $_valid = $_smarty_tpl->decodeProperties(array (
         </div>
 
     </div>
-        <div>
-            <p class="small" style="text-align:right;"><?php echo $_smarty_tpl->tpl_vars['data']->value['name'];?>
+    <div>
+        <p class="small" style="text-align:right;"><?php echo $_smarty_tpl->tpl_vars['data']->value['name'];?>
 <br /><?php echo $_smarty_tpl->tpl_vars['data']->value['dg'];?>
 </p>
-        </div>
-</div>   <?php }} ?>
+    </div>
+</div>
+
+<?php if ($_smarty_tpl->tpl_vars['data']->value['stampatracciato']==1){?>
+
+<br><br><br><br><br>
+
+<h1>Tracciato attività</h1>
+
+<br><br>
+
+<div id="tracklog">
+    <table>
+        <tr>
+            <td><b>Elemento</b></td><td><b>Data</b></td><td><b>Permanenza</b></td>
+        </tr>
+
+        <?php  $_smarty_tpl->tpl_vars['single'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['single']->_loop = false;
+ $_from = $_smarty_tpl->tpl_vars['tracklog']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
+foreach ($_from as $_smarty_tpl->tpl_vars['single']->key => $_smarty_tpl->tpl_vars['single']->value){
+$_smarty_tpl->tpl_vars['single']->_loop = true;
+?>
+            <tr>
+                <td><?php echo $_smarty_tpl->tpl_vars['single']->value['elemento'];?>
+</td> <td><?php echo $_smarty_tpl->tpl_vars['single']->value['data'];?>
+</td> <td><?php echo $_smarty_tpl->tpl_vars['single']->value['tview'];?>
+</td>
+            </tr>
+        <?php } ?>
+
+    </table>
+
+
+
+</div>
+
+<?php }?>
+<!-- <?php echo var_dump($_smarty_tpl->tpl_vars['data']->value);?>
+   -->
+
+<!-- <?php echo var_dump($_smarty_tpl->tpl_vars['tracklog']->value);?>
+   -->
+<?php }} ?>

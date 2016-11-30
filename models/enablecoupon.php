@@ -31,14 +31,18 @@ class gglmsModelEnablecoupon extends JModel {
     public function enable_coupons($data) {
         try {
             // test sul token
-            if (!$this->_check_token($data['id_associazione'], $data['token']))
-                throw new RuntimeException('Token test failed', E_USER_ERROR);
+
+            // if (!$this->_check_token($data['id_associazione'], $data['token']))
+            //     throw new RuntimeException('Token test failed', E_USER_ERROR);
 
             $query = 'UPDATE #__gg_coupon SET abilitato=1, data_abilitazione=NOW() WHERE id_iscrizione=\'' . $data['transition_id'] . '\' AND gruppo=' . $data['id_associazione'];
             $this->_logger($query);
             $this->_db->setQuery($query);
             if (false === $this->_db->query())
                 throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+
+
+
 
 //          invio la mail all'azienda con conferma
             $query = 'SELECT u.name, u.username, u.email FROM #__gg_coupon AS c INNER JOIN #__users AS u ON u.id = c.id_societa WHERE c.id_iscrizione=\'' . $data['transition_id'] . '\' LIMIT 1';

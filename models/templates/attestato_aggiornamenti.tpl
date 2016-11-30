@@ -59,7 +59,7 @@ logo
         </div>
 
         <div>
-            <h1>Attestato di Frequenza</h1>
+            <h1>Attestato  Frequenza</h1>
             <p>
                 Si attesta che
             </p>
@@ -105,7 +105,7 @@ logo
 
             {foreach $tracklog.course as $single}
                 <tr>
-                    {if $single.elemento eq 'Attestato'  || $single.tipologia eq 'riepilogo' }
+                    {if $single.elemento eq 'Attestato'}
                         <td>{$single.elemento}</td> <td>{$single.data|date_format:"%d/%m/%Y" }</td> <td></td>
                     {else}
                         <td>{$single.elemento}</td> <td>{$single.data}</td> <td>{$single.tview}</td>

@@ -35,11 +35,14 @@ class gglmsController extends JController {
         $this->registerTask('updateTrack', 'updateTrack');
         $this->registerTask('enablecoupon', 'enablecoupon');
         $this->registerTask('attestato', 'attestato');
+        $this->registerTask('stampa_attestati_azienda', 'stampa_attestati_azienda');
         $this->registerTask('helpdesk', 'helpdesk');
         $this->registerTask('helpdesksubmit', 'helpdesksubmit');
         $this->registerTask('openelement', 'openelement');
         $this->registerTask('closeelement', 'closeelement');
         $this->registerTask('switchviewmode', 'switchviewmode');
+        $this->registerTask('log_azienda', 'log_azienda');
+        $this->registerTask('log_utente', 'log_utente');
     }
 
     public function __destruct() {
@@ -214,6 +217,18 @@ class gglmsController extends JController {
         parent::display();
     }
 
+    public function stampa_attestati_azienda(){
+        $japp = & JFactory::getApplication();
+        $model = & $this->getModel('attestato');
+        $id_societa = JRequest::getInt('id_societa', 0);
+        if(!$id_societa){
+            $user = & JFactory::getUser();
+            $id_societa = $user->get('id');
+        }
+        $model->_generate_pdf_all($id_societa);
+        $japp->close();
+    }
+
     public function switchviewmode() {
         $japp = & JFactory::getApplication();
         $session = & JFactory::getSession();
@@ -299,6 +314,24 @@ class gglmsController extends JController {
         //echo $_GET['callback'] . '(' . json_encode($ret) . ')';
         echo $ret;
         //debug::end('log', 'coupon');
+        $app->close();
+    }
+
+    public function log_azienda(){
+        $app = & JFactory::getApplication();
+        $model = $this->getModel('logusers');
+        $chiamata =  $model->decodifica_chiamata_azienda();
+        $model->check_user($chiamata);
+        $model->get_coupon_list($chiamata);
+        $app->close();
+    }
+
+    public function log_utente(){
+        $app = & JFactory::getApplication();
+        $model = $this->getModel('logusers');
+        $chiamata =  $model->decodifica_chiamata_coupon();
+        $model->check_user($chiamata);
+        $model->generate_xml_log($chiamata);
         $app->close();
     }
 

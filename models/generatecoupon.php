@@ -185,10 +185,94 @@ class gglmsModelGeneratecoupon extends JModel {
             if (!$mailer->Send())
                 throw new RuntimeException('Error sending mail', E_USER_ERROR);
 
+
+
             // FINE NUOVO SISTEMA MAILING
             // e buona notte al secchio
             debug::msg('success');
             return true;
+        } catch (Exception $e) {
+            debug::exception($e);
+            return false;
+        }
+    }
+
+    public function send_coupon_to_user(){
+        //
+        try{
+            //recupero la lista dei coupon disponibili
+            $id_iscrizione = $_GET['id_iscrizione'];
+            $query = 'SELECT * FROM #__gg_coupon AS c WHERE c.id_iscrizione =' . $id_iscrizione;
+            $this->_db->setQuery($query);
+            if (false === ($lista_coupon = $this->_db->loadAssocList()))
+                throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+//            FB::log($lista_coupon, "lista coupon");
+
+            //recupero la lista delle mail da inviare
+            $query = 'SELECT * FROM temp_mailist';
+            $this->_db->setQuery($query);
+            if (false === ($lista_mail = $this->_db->loadAssocList()))
+                throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+            FB::log($lista_mail, "lista mail");
+
+            // dettagli corso
+            $query = 'SELECT * FROM #__gg_corsi AS r WHERE r.id =
+                      (SELECT c.corsi_abilitati FROM #__gg_coupon AS c WHERE c.id_iscrizione =' . $id_iscrizione.')';
+            $this->_db->setQuery($query);
+            if (false === ($dati_corso = $this->_db->loadAssoc()))
+                throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+//            FB::log($dati_corso, "dati corso");
+
+            //altri dati per comporre la mai
+            $query = 'SELECT *
+                      FROM #__usergroups_details AS d
+                      INNER JOIN #__gg_coupon AS c ON c.gruppo = d.group_id
+                      WHERE c.id_iscrizione= '.$id_iscrizione.'
+                      LIMIT 1';
+            $this->_db->setQuery($query);
+            if (false === ($results = $this->_db->loadRow()))
+                throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+//            FB::log($results, "results");
+
+            //controllo se ho abbastanza coupon
+            if(count($lista_mail)>count($lista_coupon)) {
+                echo "mancano ". -1*(count($lista_coupon)-count($lista_mail)) ." coupon";
+                return false;
+            } else {
+                echo "sono stati inviati: ". count($lista_mail) ." coupon";
+            }
+
+            for ($i=0; $i<count($lista_mail); $i++){
+
+                $data['coupon'] = $lista_coupon[$i][coupon];
+                $data['associazione_name'] = $results[2];
+                $data['associazione_url'] = 'http://www.' . strtolower($results[11]) . '/';
+                $data['email_riferimento'] = $results[7];
+                $data['receiver_email'] = $lista_mail[$i]['mail'];
+                $data['receiver_name'] = $lista_mail[$i]['name'];
+                $data['receiver_surname'] = $lista_mail[$i]['surname'];
+
+                require_once('libs/smarty/EasySmarty.class.php');
+                $mailer = JFactory::getMailer();
+                $mailer->setSender( $data['email_riferimento']);
+                $recipient = array($data['email_riferimento'], $data['receiver_email'] , 'antonio@ggallery.it');
+                $mailer->addRecipient($recipient);
+                $mailer->setSubject('Coupon corso ' . $data['associazione_name']);
+
+                $smarty = new EasySmarty();
+                $smarty->assign('ausind', $data);
+                $smarty->assign('coupon', $lista_coupon[$i][coupon]);
+                $smarty->assign('coursename', $dati_corso['corso']);
+                $mailer->setBody($smarty->fetch_template('coupon_mail_to_user.tpl', null, true, false, 0));
+                $mailer->isHTML(true);
+
+                FB::log($mailer, "mailer");
+
+                if (!$mailer->Send())
+                    throw new RuntimeException('Error sending mail', E_USER_ERROR);
+                debug::msg('success');
+            }
+
         } catch (Exception $e) {
             debug::exception($e);
             return false;

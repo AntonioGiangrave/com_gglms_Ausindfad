@@ -169,7 +169,6 @@ class gglmsModellogusers extends JModel {
         $this->_db = & JFactory::getDbo();
         $query = 'SELECT * FROM #__gg_corsi AS r WHERE r.id =
                       (SELECT c.corsi_abilitati FROM `#__gg_coupon` AS c WHERE c.id_societa ='.$id_azienda.' AND c.coupon = "'.$coupon.'")';
-
         $this->_db->setQuery($query);
         if (false === ($dati_corso = $this->_db->loadAssoc()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);

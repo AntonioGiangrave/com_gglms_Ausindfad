@@ -388,13 +388,7 @@ class gglmsController extends JController {
     public function send_coupon_to_user(){
         $japp = & JFactory::getApplication();
         $model = & $this->getModel('generatecoupon');
-//        $id_societa = JRequest::getInt('id_societa', 0);
-//        if(!$id_societa){
-//            $user = & JFactory::getUser();
-//            $id_societa = $user->get('id');
-//        }
-    
-        $model->send_coupon_to_user($id_iscrizione, $mail_list);
+        $model->send_coupon_to_user();
         $japp->close();
     }
 

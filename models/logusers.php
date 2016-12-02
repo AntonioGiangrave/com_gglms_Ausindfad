@@ -23,7 +23,14 @@ class gglmsModellogusers extends JModel {
 
     public function check_user($chiamata){
         $username = $chiamata['username'];
-        $query = 'SELECT u.id FROM ihyb8_users AS u WHERE u.username = '.$username;
+        $query = 'SELECT u.password FROM #__users AS u WHERE u.username = '.$username;
+        $this->_db->setQuery($query);
+        if (false === ($results = $this->_db->loadResult()))
+            throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+        $arraypass=explode(":", $results);
+        $salt=$arraypass[1];
+        $password = md5(trim($chiamata['password'].$salt)).":".$salt;
+        $query = 'SELECT u.id FROM #__users AS u WHERE u.username = '.$username.' AND u.password = "'.$password.'"';
         $this->_db->setQuery($query);
         if (false === ($results = $this->_db->loadResult()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
@@ -76,7 +83,7 @@ class gglmsModellogusers extends JModel {
             echo $xml_result;
         } else {
             $this->_db = & JFactory::getDbo();
-            $query = 'SELECT * FROM `ihyb8_gg_coupon` AS c WHERE c.id_societa ='.$id_azienda;
+            $query = 'SELECT * FROM `#__gg_coupon` AS c WHERE c.id_societa ='.$id_azienda;
 
             if($richiesta['usati']=='true')
                 $query.= ' AND c.id_utente IS NOT NULL';
@@ -144,14 +151,30 @@ class gglmsModellogusers extends JModel {
         $coupon = $richiesta['coupon'];
 
             $this->_db = & JFactory::getDbo();
-            $query = 'SELECT * FROM ihyb8_comprofiler AS u WHERE u.user_id =
-                      (SELECT c.id_utente FROM `ihyb8_gg_coupon` AS c WHERE c.id_societa ='.$id_azienda.' AND c.coupon = "'.$coupon.'")';
+            $query = 'SELECT * FROM #__comprofiler AS u WHERE u.user_id =
+                      (SELECT c.id_utente FROM `#__gg_coupon` AS c WHERE c.id_societa ='.$id_azienda.' AND c.coupon = "'.$coupon.'")';
 
             $this->_db->setQuery($query);
             if (false === ($anagrafica = $this->_db->loadAssoc()))
                 throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
 
             return $anagrafica;
+
+    }
+
+    public function get_course_detail($richiesta){
+        $id_azienda = $this->_id_azienda;
+        $coupon = $richiesta['coupon'];
+
+        $this->_db = & JFactory::getDbo();
+        $query = 'SELECT * FROM #__gg_corsi AS r WHERE r.id =
+                      (SELECT c.corsi_abilitati FROM `#__gg_coupon` AS c WHERE c.id_societa ='.$id_azienda.' AND c.coupon = "'.$coupon.'")';
+
+        $this->_db->setQuery($query);
+        if (false === ($dati_corso = $this->_db->loadAssoc()))
+            throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+
+        return $dati_corso;
 
     }
 
@@ -166,12 +189,12 @@ class gglmsModellogusers extends JModel {
 							DATE_FORMAT(t.data,"%d/%m/%Y - %H:%i") as data,
 							SEC_TO_TIME(tview) as tview
 						FROM
-							ihyb8_gg_corsi AS c
-						INNER JOIN ihyb8_gg_corsi_versione AS v ON c.id = v.id_corso
-						INNER JOIN ihyb8_gg_moduli AS m ON m.id_corso = v.id
-						INNER JOIN ihyb8_gg_elementi AS e ON e.id_modulo = m.id
-						INNER JOIN ihyb8_gg_track AS t ON t.id_elemento = e.id
-						WHERE t.id_utente = (SELECT p.id_utente FROM `ihyb8_gg_coupon` AS p 
+							#__gg_corsi AS c
+						INNER JOIN #__gg_corsi_versione AS v ON c.id = v.id_corso
+						INNER JOIN #__gg_moduli AS m ON m.id_corso = v.id
+						INNER JOIN #__gg_elementi AS e ON e.id_modulo = m.id
+						INNER JOIN #__gg_track AS t ON t.id_elemento = e.id
+						WHERE t.id_utente = (SELECT p.id_utente FROM `#__gg_coupon` AS p 
 						                      WHERE p.id_societa ='.$id_azienda.' 
 						                      AND p.coupon = "'.$coupon.'")
 						                      ORDER BY e.ordinamento ASC';
@@ -190,14 +213,13 @@ class gglmsModellogusers extends JModel {
         $this->_db = & JFactory::getDbo();
 
         $query =	'  SELECT q.c_date_time
-                        FROM ihyb8_gg_corsi AS c
-                        INNER JOIN ihyb8_quiz_r_student_quiz AS q ON c.id_quiz_finale = q.c_quiz_id
-                        WHERE q.c_student_id = (SELECT p.id_utente FROM `ihyb8_gg_coupon` AS p
+                        FROM #__gg_corsi AS c
+                        INNER JOIN #__quiz_r_student_quiz AS q ON c.id_quiz_finale = q.c_quiz_id
+                        WHERE q.c_student_id = (SELECT p.id_utente FROM `#__gg_coupon` AS p
 						                      WHERE p.id_societa ='.$id_azienda.'
 						                      AND p.coupon = "'.$coupon.'")';
 
         $this->_db->setQuery($query);
-        FB::log($query, "query test finale");
         if (false === ($test = $this->_db->loadAssoc()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
         return $test;
@@ -223,6 +245,8 @@ class gglmsModellogusers extends JModel {
 
                 $xml_result .= '<cognome>'.$anagrafica['cb_cognome'].'</cognome>';
 
+                $xml_result .= '<datadinascita>'.$anagrafica['cb_datadinascita'].'</datadinascita>';
+
                 $xml_result .= '<luogodinascita>'.$anagrafica['cb_luogodinascita'].'</luogodinascita>';
 
                 $xml_result .= '<provinciadinascita>'.$anagrafica['cb_provinciadinascita'].'</provinciadinascita>';
@@ -236,6 +260,22 @@ class gglmsModellogusers extends JModel {
                 $xml_result .= '<residenza>'.$anagrafica['cb_residenza'].'</residenza>';
 
                 $xml_result .= '</anagrafica>';
+
+            $dati_corso = $this->get_course_detail($richiesta);
+
+                $xml_result .= '<corso>';
+
+                $xml_result .= '<id>'.$dati_corso['id'].'</id>';
+
+                $xml_result .= '<nome>'.$dati_corso['corso'].'</nome>';
+
+                $xml_result .= '<titoloattestato>'.$dati_corso['titoloattestato'].'</titoloattestato>';
+
+                $xml_result .= '<descrizione>'.htmlentities($dati_corso['abstract'], ENT_QUOTES ).'</descrizione>';
+
+                $xml_result .= '<url>http://www.ausindfad.it/home/index.php?option=com_gglms&view=corso&id='.$dati_corso['id'].'</url>';
+
+            $xml_result .= '</corso>';
 
             $track= $this->get_user_track($richiesta);
             $xml_result .= '<tracklog>';
@@ -252,7 +292,6 @@ class gglmsModellogusers extends JModel {
             $xml_result .= '</tracklog>';
 
             $test= $this->get_final_test($richiesta);
-            FB::log($test, "test finale");
 
             $xml_result .= '<finaltest>';
             $xml_result .= '<data>'.$test['c_date_time'].'</data>';

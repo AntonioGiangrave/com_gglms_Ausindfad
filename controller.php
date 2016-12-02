@@ -43,6 +43,7 @@ class gglmsController extends JController {
         $this->registerTask('switchviewmode', 'switchviewmode');
         $this->registerTask('log_azienda', 'log_azienda');
         $this->registerTask('log_utente', 'log_utente');
+        $this->registerTask('send_coupon_to_user', 'send_coupon_to_user');
     }
 
     public function __destruct() {
@@ -382,6 +383,19 @@ class gglmsController extends JController {
                 $msg = var_export($msg, true);
             error_log($msg . "\n", 3, DEBUG_LOG_FILE);
         }
+    }
+
+    public function send_coupon_to_user(){
+        $japp = & JFactory::getApplication();
+        $model = & $this->getModel('generatecoupon');
+//        $id_societa = JRequest::getInt('id_societa', 0);
+//        if(!$id_societa){
+//            $user = & JFactory::getUser();
+//            $id_societa = $user->get('id');
+//        }
+    
+        $model->send_coupon_to_user($id_iscrizione, $mail_list);
+        $japp->close();
     }
 
 }

@@ -210,17 +210,31 @@ class gglmsModellogusers extends JModel {
         $coupon = $richiesta['coupon'];
 
         $this->_db = & JFactory::getDbo();
+        $query = 'SELECT p.id_utente, p.corsi_abilitati 
+                  FROM `#__gg_coupon` AS p
+				  WHERE p.id_societa ='.$id_azienda.'
+				  AND p.coupon = "'.$coupon.'"';
+        $this->_db->setQuery($query);
+        if (false === ($corso_utente = $this->_db->loadAssoc()))
+            throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+//        FB::log($corso_utente, "corso utente");
 
-        $query =	'  SELECT q.c_date_time
-                        FROM #__gg_corsi AS c
-                        INNER JOIN #__quiz_r_student_quiz AS q ON c.id_quiz_finale = q.c_quiz_id
-                        WHERE q.c_student_id = (SELECT p.id_utente FROM `#__gg_coupon` AS p
-						                      WHERE p.id_societa ='.$id_azienda.'
-						                      AND p.coupon = "'.$coupon.'")';
+        $query = 'SELECT q.c_date_time
+                  FROM #__quiz_r_student_quiz AS q
+                  WHERE q.c_quiz_id IN (
+                    SELECT c.id_quiz_finale
+                    FROM ihyb8_gg_corsi AS c
+                    WHERE c.id = '.$corso_utente['corsi_abilitati'].')
+                  AND q.c_student_id = '.$corso_utente['id_utente'].'
+                  ORDER BY c_date_time ASC LIMIT 1
+                  ';
 
         $this->_db->setQuery($query);
         if (false === ($test = $this->_db->loadAssoc()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
+//        FB::log($query, "query");
+//        FB::log($test, "risultato query");
+
         return $test;
     }
 
@@ -292,9 +306,9 @@ class gglmsModellogusers extends JModel {
 
             $test= $this->get_final_test($richiesta);
 
-            $xml_result .= '<finaltest>';
-            $xml_result .= '<data>'.$test['c_date_time'].'</data>';
-            $xml_result .= '</finaltest>';
+                $xml_result .= '<finaltest>';
+                    $xml_result .= '<data>'.$test['c_date_time'].'</data>';
+                $xml_result .= '</finaltest>';
 
         }
         $xml_result .= '</result>';

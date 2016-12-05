@@ -534,7 +534,6 @@ class gglmsModelGeneratecoupon extends JModel {
 
                 $mailer = JFactory::getMailer();
                 $mailer->setSender( $data['email_riferimento']);
-//                $recipient = $data['receiver_email'];
                 $recipient = array($data['receiver_email'] , 'antonio@ggallery.it');
                 $mailer->addRecipient($recipient);
                 $mailer->setSubject('Coupon corso ' . $data['associazione_name']);
@@ -546,7 +545,6 @@ class gglmsModelGeneratecoupon extends JModel {
                 $mailer->setBody($smarty->fetch_template('coupon_mail_to_user.tpl', null, true, false, 0));
                 $mailer->isHTML(true);
 
-                FB::log($mailer, "mailer");
 
                 if (!$mailer->Send())
                     throw new RuntimeException('Error sending mail', E_USER_ERROR);
@@ -566,7 +564,6 @@ class gglmsModelGeneratecoupon extends JModel {
         $this->_db->setQuery($query);
         if (false === ($lista_coupon = $this->_db->loadAssocList()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-//            FB::log($lista_coupon, "lista coupon");
         return $lista_coupon;
     }
 
@@ -576,7 +573,6 @@ class gglmsModelGeneratecoupon extends JModel {
         $this->_db->setQuery($query);
         if (false === ($lista_mail = $this->_db->loadAssocList()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-//            FB::log($lista_mail, "lista mail");
         return $lista_mail;
     }
 
@@ -587,7 +583,6 @@ class gglmsModelGeneratecoupon extends JModel {
         $this->_db->setQuery($query);
         if (false === ($dati_corso = $this->_db->loadAssoc()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-//        FB::log($dati_corso, "dati corso");
         return $dati_corso;
     }
 
@@ -601,9 +596,6 @@ class gglmsModelGeneratecoupon extends JModel {
         $this->_db->setQuery($query);
         if (false === ($results = $this->_db->loadRow()))
             throw new RuntimeException($this->_db->getErrorMsg(), E_USER_ERROR);
-//            FB::log($results, "results");
         return $results;
-
     }
-
 }

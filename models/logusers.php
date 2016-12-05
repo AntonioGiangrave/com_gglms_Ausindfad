@@ -284,7 +284,7 @@ class gglmsModellogusers extends JModel {
 
                 $xml_result .= '<titoloattestato>'.$dati_corso['titoloattestato'].'</titoloattestato>';
 
-                $xml_result .= '<descrizione>'.htmlentities($dati_corso['abstract'], ENT_QUOTES ).'</descrizione>';
+                $xml_result .= '<descrizione>'.strip_tags($dati_corso['abstract']).'</descrizione>';
 
                 $xml_result .= '<url>http://www.ausindfad.it/home/index.php?option=com_gglms&view=corso&id='.$dati_corso['id'].'</url>';
 

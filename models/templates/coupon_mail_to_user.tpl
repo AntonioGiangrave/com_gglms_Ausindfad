@@ -4,14 +4,14 @@
     <title>Coupon</title>
 </head>
 <body>
-<h1>Coupon formazione</h1>
+<h1>Coupon formazione {$ausind.associazione_name}</h1>
 
 <p>Spett.le {$ausind.receiver_name} {$ausind.receiver_surname},</p>
 <p>
-    {$ausind.associazione_name} ha provveduto a fornirle un coupon per usufruire di un corso di e-learning.
+    {$ausind.associazione_name} ha provveduto a fornirle un coupon per un corso di formazione.
 </p>
 <p>
-    Per usufruirne deve prima registrarsi sul portale <a href="{$ausind.associazione_url}">{$ausind.associazione_name}</a>:
+    Per usufruirne deve prima registrarsi sul portale <a href="{$ausind.associazione_url}">{$ausind.associazione_name}</a>.
     <br />
     Le credenziali così create saranno valide anche per gli eventuali futuri corsi e-learning.
     <br />
